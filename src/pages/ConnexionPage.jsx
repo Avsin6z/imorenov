@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Mail, Lock } from "lucide-react";
 import { useAuth } from "../context/AppContext";
 import { InputField } from "./InscriptionPage";
+import { supabase } from "../utils/supabase";
 
 export default function ConnexionPage() {
   const { login } = useAuth();
@@ -13,14 +14,28 @@ export default function ConnexionPage() {
   const [loading, setLoading] = useState(false);
   const update = k => v => setForm(f => ({ ...f, [k]: v }));
 
+  const handleGoogle = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin + "/dashboard"
+    }
+  });
+};
+
   const handleSubmit = async e => {
-    e.preventDefault();
-    if (!form.email || !form.password) { setError("Remplissez tous les champs."); return; }
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 600));
-    login({ prenom: form.email.split("@")[0], email: form.email, role: "client" });
+  e.preventDefault();
+  if (!form.email || !form.password) { setError("Remplissez tous les champs."); return; }
+  setLoading(true);
+  try {
+    await login({ email: form.email, password: form.password });
     navigate("/dashboard");
-  };
+  } catch (err) {
+    setError("Email ou mot de passe incorrect.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pt-28 min-h-screen flex items-center justify-center px-4 bg-slate-50 dark:bg-slate-950">
@@ -45,9 +60,14 @@ export default function ConnexionPage() {
             <span className="text-slate-400 text-xs">ou</span>
             <div className="flex-1 h-px bg-slate-100 dark:bg-slate-700" />
           </div>
-          <button type="button" className="w-full bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-600 transition-all">
-            🌐 Continuer avec Google
-          </button>
+          <button
+  type="button"
+  onClick={handleGoogle}
+  className="w-full bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-3 border border-slate-200 dark:border-slate-600 transition-all"
+>
+  <img src="https://www.google.com/favicon.ico" className="w-4 h-4" />
+  Continuer avec Google
+</button>
         </form>
         <p className="text-center mt-5 text-slate-500 text-sm">
           Pas de compte ? <Link to="/inscription" className="text-orange-500 font-bold hover:text-orange-600">S'inscrire gratuitement</Link>

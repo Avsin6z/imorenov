@@ -23,7 +23,7 @@ export function InputField({ label, type = "text", value, onChange, placeholder,
 }
 
 export default function InscriptionPage() {
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
   const [role, setRole] = useState("client");
   const [step, setStep] = useState(1);
@@ -50,15 +50,27 @@ export default function InscriptionPage() {
     return e;
   };
 
-  const handleSubmit = async e => {
-    if (e?.preventDefault) e.preventDefault();
-    const e2 = validate();
-    if (Object.keys(e2).length > 0) { setErrors(e2); return; }
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 900));
-    login({ prenom: form.prenom, nom: form.nom, email: form.email, tel: form.tel, role, raisonSociale: form.raisonSociale, siret: form.siret });
+  const handleSubmit = async (e) => {
+  if (e?.preventDefault) e.preventDefault();
+  const e2 = validate();
+  if (Object.keys(e2).length > 0) { setErrors(e2); return; }
+  setLoading(true);
+  try {
+    await register({
+      prenom: form.prenom,
+      nom: form.nom,
+      email: form.email,
+      password: form.password,
+      tel: form.tel,
+      role,
+    });
     navigate("/dashboard");
-  };
+  } catch (err) {
+    setErrors({ email: err.message });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const FORMES = ["SARL","SAS","SASU","EURL","EI","Auto-entrepreneur","SNC","SA"];
   const SECTEURS = ["Gros œuvre & Structure","Second œuvre","Électricité & Énergie","Plomberie & Chauffage","Menuiserie & Agencement","Revêtements & Finitions","Énergie renouvelable","Diagnostic & Bureau d'études","Aménagement extérieur","Nettoyage & Maintenance"];
