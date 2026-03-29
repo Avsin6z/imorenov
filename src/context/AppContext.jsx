@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../utils/supabase";
 
+
 const AuthContext = createContext(null);
 const FavorisContext = createContext(null);
 const CompareContext = createContext(null);
@@ -39,14 +40,33 @@ export function AuthProvider({ children }) {
   }, []);
 
   const fetchProfile = async (userId) => {
-    const { data } = await supabase
+  try {
+    const { data: authUser } = await supabase.auth.getUser();
+    const { data: profile } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userId)
       .single();
-    setUser(data);
-    setLoading(false);
-  };
+
+    if (profile) {
+      setUser({
+        ...profile,
+        email: authUser?.user?.email,
+      });
+    } else {
+      setUser({
+        id: userId,
+        email: authUser?.user?.email,
+        prenom: authUser?.user?.user_metadata?.full_name?.split(" ")[0] || authUser?.user?.email?.split("@")[0],
+        nom: authUser?.user?.user_metadata?.full_name?.split(" ")[1] || "",
+        role: "client",
+      });
+    }
+  } catch {
+    setUser(null);
+  }
+  setLoading(false);
+};
 
   const login = async ({ email, password }) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -98,10 +118,20 @@ export function CompareProvider({ children }) {
 
 export function ThemeProvider({ children }) {
   const [dark, setDark] = useState(() => localStorage.getItem("imor_theme") === "dark");
+  
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [dark]);
+
   const toggle = () => setDark(d => {
     localStorage.setItem("imor_theme", !d ? "dark" : "light");
     return !d;
   });
+
   return <ThemeContext.Provider value={{ dark, toggle }}>{children}</ThemeContext.Provider>;
 }
 

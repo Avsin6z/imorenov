@@ -15,6 +15,9 @@ const AidesPage      = lazy(() => import("./pages/AidesPage"));
 const FavorisPage    = lazy(() => import("./pages/FavorisPage"));
 const ComparePage    = lazy(() => import("./pages/ComparePage"));
 const DevisPage      = lazy(() => import("./pages/DevisPage"));
+const ConfirmationPage = lazy(() => import("./pages/ConfirmationPage"));
+const MotDePasseOubliePage = lazy(() => import("./pages/MotDePasseOubliePage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 
 const PageLoader = () => (
   <div className="pt-28 px-6 max-w-5xl mx-auto">
@@ -63,6 +66,8 @@ function AppContent() {
           <Route path="/comparer" element={<ComparePage />} />
           <Route path="/devis" element={<DevisPage />} />
           <Route path="/confirmation" element={<ConfirmationPage />} />
+          <Route path="/mot-de-passe-oublie" element={<MotDePasseOubliePage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="*" element={
             <div className="pt-40 text-center">
               <h2 className="text-5xl font-black text-slate-200 dark:text-slate-700 mb-4">404</h2>

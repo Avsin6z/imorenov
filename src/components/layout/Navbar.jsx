@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Home, Heart, LogOut } from "lucide-react";
+import { Home, Heart, LogOut, User } from "lucide-react";
 import { useAuth, useFavoris } from "../../context/AppContext";
 import { ThemeToggle } from "../ui/Toggle";
 
@@ -9,7 +9,7 @@ export function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <nav className="fixed w-full z-50 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-100 dark:border-white/5 py-3">
+    <nav className="fixed w-full z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-b border-slate-100 dark:border-white/5 py-3 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
 
         <Link to="/" className="flex items-center gap-2.5 group">
@@ -47,11 +47,13 @@ export function Navbar() {
                 )}
               </Link>
               <Link to="/dashboard"
-                className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-2 rounded-xl transition-all border border-slate-200 dark:border-slate-700">
+                className="flex items-center gap-2 bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20 px-3 py-2 rounded-xl transition-all border border-orange-100 dark:border-orange-500/20">
                 <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-[11px] font-black text-white">
-                  {user.prenom?.[0]?.toUpperCase()}
+                  {user.prenom?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
                 </div>
-                <span className="text-slate-700 dark:text-white text-sm font-semibold hidden md:block">{user.prenom}</span>
+                <span className="text-orange-600 dark:text-orange-400 text-sm font-bold hidden md:block">
+                  {user.prenom || user.email?.split("@")[0]}
+                </span>
               </Link>
               <button
                 onClick={() => { logout(); navigate("/"); }}

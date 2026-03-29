@@ -64,7 +64,7 @@ export default function InscriptionPage() {
       tel: form.tel,
       role,
     });
-    navigate("/dashboard");
+    navigate("/confirmation")
   } catch (err) {
     setErrors({ email: err.message });
   } finally {
